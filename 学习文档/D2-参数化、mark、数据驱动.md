@@ -1,8 +1,8 @@
 ## 学习路线图
 
-text
-
+```text
 第1步：理解参数化 → 第2步：理解mark标签 → 第3步：理解数据驱动 → 第4步：综合实战
+```
 
 * * *
 
@@ -12,8 +12,7 @@ text
 
 **通俗理解**：同一个测试逻辑，换不同的数据反复执行。
 
-python
-
+```python
 # 没有参数化 - 代码重复
 def test_login_1():
  assert login("admin", "123") == "成功"
@@ -28,13 +27,13 @@ def test_login_2():
 ])
 def test_login(username, password):
  assert login(username, password) == "成功"
+```
 
 ## 1.2 第一个参数化练习
 
 **步骤1：创建项目和虚拟环境**
 
-bash
-
+```bash
 # 创建项目文件夹
 mkdir pytest_learning
 cd pytest_learning
@@ -47,13 +46,13 @@ source venv/Scripts/activate
 
 # 安装pytest
 pip install pytest
+```
 
 **步骤2：创建第一个测试文件**
 
 创建 `test_param.py`：
 
-python
-
+```python
 import pytest
 
 # 最简单的参数化 - 单参数
@@ -62,17 +61,17 @@ def test_city(city):
  """测试城市名称不为空"""
  print(f"\n测试城市: {city}")
  assert len(city) > 0
+```
 
 **步骤3：运行测试**
 
-bash
-
+```bash
 pytest test_param.py -v -s
+```
 
 **输出效果**：
 
-text
-
+```text
 test_param.py::test_city[北京] 
 测试城市: 北京
 PASSED
@@ -85,13 +84,13 @@ PASSED
 test_param.py::test_city[深圳] 
 测试城市: 深圳
 PASSED
+```
 
 ✅ **知识点掌握**：参数化让一个测试函数自动执行了4次，每次传入不同的值。
 
 ## 1.3 多参数参数化
 
-python
-
+```python
 import pytest
 
 # 多参数 - 每组数据有多个值
@@ -119,17 +118,17 @@ def mock_login(username, password):
  if username == "admin" and password == "123456":
  return "成功"
  return "失败"
+```
 
 运行：
 
-bash
-
+```bash
 pytest test_param.py -v -s
+```
 
 **练习任务**：
 
 1.  修改上面的数据，添加第5组数据 `("test", "test", "用户不存在")`
-
 2.  运行看看结果
 
 * * *
@@ -140,19 +139,18 @@ pytest test_param.py -v -s
 
 **通俗理解**：给测试用例贴标签，想运行哪类就运行哪类。
 
-python
-
+```python
 @pytest.mark.smoke      # 贴"冒烟测试"标签
 @pytest.mark.regression # 贴"回归测试"标签
 def test_login():
  pass
+```
 
 ## 2.2 第一个标签练习
 
 **创建 `test_mark.py`**：
 
-python
-
+```python
 import pytest
 
 class TestUser:
@@ -186,11 +184,11 @@ class TestUser:
  """慢速测试-大数据处理"""
  print("\n执行慢速测试: 大数据处理")
  assert True
+```
 
 **运行不同标签**：
 
-bash
-
+```bash
 # 只运行冒烟测试
 pytest test_mark.py -m smoke -v -s
 
@@ -202,25 +200,24 @@ pytest test_mark.py -m "smoke or regression" -v -s
 
 # 排除慢速测试
 pytest test_mark.py -m "not slow" -v -s
+```
 
 ## 2.3 注册标签（消除警告）
 
 创建 `pytest.ini` 文件：
 
-ini
-
+```ini
 [pytest]
 markers =
  smoke: 冒烟测试-核心功能
  regression: 回归测试-完整验证
  slow: 慢速测试-执行时间长
+```
 
 **练习任务**：
 
 1.  运行 `pytest test_mark.py -m smoke`，观察结果
-
 2.  添加一个新标签 `@pytest.mark.p0` 到某个测试
-
 3.  运行 `pytest -m p0` 看看能否运行
 
 * * *
@@ -231,8 +228,7 @@ markers =
 
 **核心思想**：测试数据从代码里分离出来，存在外部文件（YAML/JSON）中。
 
-text
-
+```text
 ❌ 错误方式：数据写在代码里
 def test_login():
  data = {"username": "admin", "password": "123"}  # 改数据要改代码
@@ -240,19 +236,19 @@ def test_login():
 ✅ 正确方式：数据存在文件里
 def test_login(test_data):  # test_data从文件读取
  # 改数据只需改文件，不用改代码
+```
 
 ## 3.2 安装YAML支持
 
-bash
-
+```bash
 pip install pyyaml
+```
 
 ## 3.3 创建数据文件
 
 **创建 `data/login_data.yaml`**：
 
-yaml
-
+```yaml
 login_cases:
  - name: "正常登录"
  username: "admin"
@@ -268,13 +264,13 @@ login_cases:
  username: ""
  password: "123456"
  expected: "用户名不能为空"
+```
 
 ## 3.4 创建数据加载器
 
 **创建 `utils/data_loader.py`**：
 
-python
-
+```python
 """
 数据加载器 - 从YAML文件读取测试数据
 """
@@ -302,13 +298,13 @@ class DataLoader:
  """获取测试用例列表"""
  data = DataLoader.load_yaml(file_path)
  return data[case_key]
+```
 
 ## 3.5 使用数据驱动的测试
 
 **创建 `test_data_driven.py`**：
 
-python
-
+```python
 """
 数据驱动测试 - 数据从YAML文件读取
 """
@@ -342,17 +338,17 @@ def test_login(case):
  # 断言
  assert result == case['expected']
  print(f"✅ 实际结果: {result}")
+```
 
 **运行测试**：
 
-bash
-
+```bash
 pytest test_data_driven.py -v -s
+```
 
 **练习任务**：
 
 1.  修改 `data/login_data.yaml`，添加第4组数据：密码为空的情况
-
 2.  不需要改任何代码，重新运行测试，新数据自动生效
 
 ✅ **核心收获**：改数据不需要改代码！
@@ -365,8 +361,7 @@ pytest test_data_driven.py -v -s
 
 ## 4.1 完整项目结构
 
-text
-
+```text
 pytest_learning/
 │
 ├── pytest.ini                    # 配置（注册标签）
@@ -382,31 +377,31 @@ pytest_learning/
 │   └── login_api.py             # 登录API
 │
 └── test_cases/                   # 测试用例
- └── test_login.py            # 登录测试
+    └── test_login.py            # 登录测试
+```
 
 ## 4.2 创建所有文件
 
 **步骤1：创建目录**
 
-bash
-
+```bash
 mkdir -p data utils apis test_cases
+```
 
 **步骤2：requirements.txt**
 
-txt
-
+```txt
 pytest==7.4.3
 pytest-html==4.1.1
 pyyaml==6.0.1
 requests==2.31.0
+```
 
 安装：`pip install -r requirements.txt`
 
 **步骤3：pytest.ini**
 
-ini
-
+```ini
 [pytest]
 markers =
  smoke: 冒烟测试-核心功能
@@ -417,11 +412,11 @@ markers =
 
 addopts = -v -s --html=reports/report.html
 testpaths = test_cases
+```
 
 **步骤4：data/login_data.yaml（10组数据）**
 
-yaml
-
+```yaml
 login_cases:
  - name: "TC001_正常登录_管理员"
  username: "admin"
@@ -502,11 +497,11 @@ login_cases:
  expected_msg: "用户名或密码错误"
  priority: "p2"
  markers: ["regression", "login"]
+```
 
 **步骤5：utils/data_loader.py**
 
-python
-
+```python
 import yaml
 from pathlib import Path
 from typing import List, Dict
@@ -526,11 +521,11 @@ class DataLoader:
  def get_test_cases(cls, file_path: str, case_key: str) -> List[Dict]:
  data = cls.load_yaml(file_path)
  return data.get(case_key, [])
+```
 
 **步骤6：apis/login_api.py**
 
-python
-
+```python
 from typing import Dict
 
 class LoginAPI:
@@ -576,11 +571,11 @@ class LoginAPI:
 # 便捷函数
 def login_api(username: str, password: str) -> Dict:
  return LoginAPI.login(username, password)
+```
 
 **步骤7：test_cases/test_login.py**
 
-python
-
+```python
 """
 登录接口测试 - 综合运用参数化、mark标签、数据驱动
 """
@@ -640,11 +635,11 @@ class TestLogin:
  print(f"\n[异常场景] {case['name']}")
  result = login_api(case['username'], case['password'])
  assert result.get('code') != 200
+```
 
 ## 4.3 运行测试
 
-bash
-
+```bash
 # 1\. 运行所有测试
 pytest test_cases/test_login.py
 
@@ -659,29 +654,23 @@ pytest --html=reports/report.html
 
 # 5\. 查看详细输出
 pytest -v -s
+```
 
 ## 4.4 总结检查清单
 
 完成以下任务，证明你已掌握：
 
 *   **参数化**：能用一个测试函数执行10组不同数据
-
 *   **mark标签**：能用 `-m smoke` 只运行冒烟测试
-
 *   **数据驱动**：能修改YAML文件而不改代码
-
 *   **数据分离**：数据文件在 `data/`，代码在 `test_cases/`
-
 *   **结构**：项目有清晰的目录结构
 
 ## 4.5 扩展练习
 
 1.  **添加新数据**：在YAML中添加第11组数据，不改代码，测试自动执行
-
 2.  **新建标签**：创建 `@pytest.mark.p2`，标记几个用例
-
 3.  **改用JSON**：把YAML数据改成JSON格式，修改加载器支持JSON
-
 4.  **真实接口**：把 `login_api` 改成调用真实HTTP接口
 
 * * *
@@ -691,11 +680,7 @@ pytest -v -s
 现在你掌握了：
 
 *   ✅ 参数化 - 一份代码多组数据
-
 *   ✅ mark标签 - 灵活选择执行哪些测试
-
 *   ✅ 数据驱动 - 数据与代码分离
-
 *   ✅ 10组接口参数化
-
 *   ✅ 完整的项目结构

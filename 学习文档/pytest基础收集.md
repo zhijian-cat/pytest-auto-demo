@@ -35,6 +35,13 @@
 
 **priority（优先权）**：`普赖 - **奥** - 若 - 提`
 （拼音：`pǔ lài - **ào** - ruò - tí`）*   `**奥**`：**重读+拉长**
+**priority 高频搭配**
+
+*   `top / highest priority` 最高优先级
+*   `low / medium / high priority` 低/中/高优先级
+*   `give priority to...` 优先考虑…
+*   `set / adjust / reprioritize priorities` 设定/调整优先级
+*   `out of priority` 优先级错乱/未排序
 
 # pytest 官方命名规范（默认收集规则）
 
